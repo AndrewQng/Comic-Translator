@@ -460,6 +460,18 @@ function adjustFontSize(boxEl, textEl, imgWidth, imgHeight, wPct, hPct, textLen)
     fontSize = minFontSize;
     textEl.style.fontSize = `${fontSize}px`;
   }
+
+  // 3. Tối ưu hóa UI/UX khi văn bản bị tràn (ngay cả ở font size nhỏ nhất)
+  const finalHeight = textEl.scrollHeight;
+  if (finalHeight > availableHeight) {
+    // Nếu vẫn bị tràn chiều cao, chuyển sang căn đỉnh (flex-start) để người dùng đọc được từ đầu câu
+    bubbleEl.style.alignItems = "flex-start";
+    bubbleEl.style.paddingTop = "6px"; // Thu hẹp bớt padding trên để tăng diện tích hiển thị chữ
+  } else {
+    // Nếu vừa vặn, giữ căn giữa (center) như bình thường
+    bubbleEl.style.alignItems = "center";
+    bubbleEl.style.paddingTop = `${paddingTop}px`;
+  }
 }
 // ==========================================
 // TÍNH NĂNG HOVER ĐỂ HIỂN THỊ NÚT DỊCH NHANH TRÊN ẢNH
