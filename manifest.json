@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Manga & Image Translator",
+  "version": "1.0",
+  "description": "Dịch chữ trên hình ảnh và hiển thị lớp phủ dịch thuật sử dụng Gemini AI miễn phí.",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "icon.png"
+  },
+  "icons": {
+    "128": "icon.png"
+  }
+}

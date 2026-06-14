@@ -1,0 +1,368 @@
+/* Overlay container cho ảnh */
+.manga-translator-overlay-container {
+  position: absolute;
+  pointer-events: none;
+  z-index: 999999;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+
+/* Các hộp chứa chữ dịch - Kiểu dáng bong bóng thoại Manga */
+/* Khung bao ngoài (Khớp chính xác tọa độ gốc của AI, dùng để căn giữa bong bóng) */
+.manga-translation-box {
+  position: absolute;
+  pointer-events: none; /* Khung ngoài trong suốt, cho phép click xuyên qua */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0;
+}
+
+/* Bong bóng thoại thực tế (Phủ kín hoàn toàn khung chữ gốc để che hết chữ cũ) */
+.manga-translation-bubble {
+  pointer-events: auto; /* Nhận sự kiện click/hover */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px; /* Bo góc tròn trịa như bong bóng truyện tranh */
+  background-color: #ffffff;
+  border: 1.8px solid #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+  padding: 8px 12px;
+  width: 100%; /* Phủ kín chiều ngang khung */
+  height: 100%; /* Phủ kín chiều dọc khung */
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease, box-shadow 0.2s ease;
+  cursor: help;
+}
+
+/* Nội dung chữ dịch - Phong cách Comic */
+.manga-translation-text {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.15;
+  width: 100%;
+  text-align: center;
+  word-break: break-word;
+  overflow: hidden;
+  text-transform: uppercase;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+}
+
+/* Hiệu ứng di chuột vào bong bóng: Làm mờ để xem chữ gốc dưới ảnh */
+.manga-translation-bubble:hover {
+  opacity: 0.08 !important;
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
+/* Nút tắt overlay */
+.manga-overlay-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.manga-overlay-close-btn:hover {
+  background: #ef4444;
+  transform: scale(1.1);
+}
+
+/* Loading overlay tràn ảnh với hiệu ứng kính mờ (Glassmorphism) */
+.manga-translator-loading-overlay {
+  position: absolute;
+  pointer-events: auto;
+  background: rgba(10, 14, 23, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999998;
+  box-sizing: border-box;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.manga-loading-content {
+  background: rgba(18, 24, 38, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  max-width: 85%;
+  text-align: center;
+}
+
+.manga-loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(0, 255, 163, 0.1);
+  border-top: 3px solid #00FFA3;
+  border-right: 3px solid #00B8FF;
+  border-radius: 50%;
+  animation: manga-spin 0.8s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 163, 0.5));
+}
+
+.manga-loading-text {
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  animation: manga-pulse 1.5s ease-in-out infinite;
+}
+
+/* Nút dịch nhanh khi di chuột qua ảnh (Hover Translate Button) */
+.manga-hover-translate-btn {
+  position: absolute;
+  display: none; /* Điều khiển hiển thị bằng JS */
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  background: rgba(10, 14, 23, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: #ffffff;
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 999995;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: auto;
+}
+
+.manga-hover-translate-btn svg {
+  width: 14px;
+  height: 14px;
+  color: #00FFA3;
+  transition: transform 0.2s;
+}
+
+.manga-hover-translate-btn:hover {
+  background: linear-gradient(135deg, #00FFA3 0%, #00B8FF 100%);
+  color: #05070e;
+  border-color: transparent;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 15px rgba(0, 255, 163, 0.4);
+}
+
+.manga-hover-translate-btn:hover svg {
+  color: #05070e;
+  transform: rotate(15deg);
+}
+
+.manga-hover-translate-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Các lớp cũ làm dự phòng */
+.manga-toast-indicator {
+  position: absolute;
+  pointer-events: auto;
+  background: rgba(10, 14, 23, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid #ef4444;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  z-index: 9999999;
+}
+
+.manga-toast-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  margin-left: 6px;
+}
+
+.manga-toast-close:hover {
+  color: #ef4444;
+}
+
+@keyframes manga-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes manga-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ==========================================
+   CSS CHO CHẾ ĐỘ CHỌN NHIỀU ẢNH DỊCH (SELECTION MODE)
+   ========================================== */
+
+/* Trạng thái ảnh có thể chọn */
+.manga-selectable-image {
+  cursor: cell !important;
+  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+.manga-selectable-image:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 0 15px rgba(0, 184, 255, 0.25) !important;
+}
+
+/* Trạng thái ảnh đã được chọn */
+.manga-selected-image {
+  outline: 5px solid #00FFA3 !important;
+  outline-offset: -5px;
+  box-shadow: 0 0 25px rgba(0, 255, 163, 0.5) !important;
+  transform: scale(0.99) !important;
+  filter: brightness(0.95);
+}
+
+/* Badge huy hiệu chọn ở góc trái trên của ảnh */
+.manga-selected-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  background-color: #00FFA3;
+  border: 1.5px solid #05070e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  z-index: 999996;
+  color: #05070e;
+  pointer-events: none; /* Tránh cản trở chuột click ảnh */
+  animation: manga-badge-pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes manga-badge-pop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+/* Thanh điều khiển chọn dịch ở dưới màn hình (Floating Action Bar) */
+.manga-selection-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px); /* Bắt đầu ẩn phía dưới */
+  background: rgba(10, 14, 23, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+  z-index: 9999999;
+  color: #ffffff;
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: auto;
+}
+
+.manga-selection-bar.active {
+  transform: translateX(-50%) translateY(0); /* Hiện lên */
+}
+
+.manga-selection-bar span {
+  color: #9ca3af;
+}
+
+.manga-selection-bar strong {
+  color: #00FFA3;
+  font-size: 15px;
+  margin: 0 2px;
+}
+
+/* Nút xác nhận dịch */
+.manga-confirm-translate-btn {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #00FFA3 0%, #00B8FF 100%);
+  border: none;
+  border-radius: 8px;
+  color: #05070e;
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 255, 163, 0.25);
+  transition: all 0.25s;
+}
+
+.manga-confirm-translate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(0, 184, 255, 0.4);
+}
+
+.manga-confirm-translate-btn:active {
+  transform: translateY(1px);
+}
+
+/* Nút hủy */
+.manga-cancel-select-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #d1d5db;
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.manga-cancel-select-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.manga-cancel-select-btn:active {
+  background: rgba(255, 255, 255, 0.04);
+}
